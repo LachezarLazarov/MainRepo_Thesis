@@ -1,0 +1,45 @@
+<div id="map"></div>
+<input type="file" id="picture" (change)="uploadPicture($event)">
+
+import { Component } from '@angular/core';
+import { PictureService } from './picture.service';
+
+declare var google: any;
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  map: any;
+
+  constructor(private pictureService: PictureService) { }
+
+  ngOnInit() {
+    this.map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 8,
+      center: { lat: 37.7749, lng: -122.4194 }
+    });
+  }
+
+  uploadPicture(event: any) {
+    const file = event.target.files[0];
+    this.pictureService.postPicture(file)
+      .subscribe(response => {
+        const url = response;
+        const latLng = this.getLatLngFromUrl(url);
+        this.addMarker(latLng);
+      });
+  }
+
+  getLatLngFromUrl(url: string) {
+  }
+
+  addMarker(latLng: any) {
+    new google.maps.Marker({
+      position: latLng,
+      map: this.map
+    });
+  }
+}

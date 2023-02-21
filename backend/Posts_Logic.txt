@@ -1,0 +1,42 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PictureService {
+
+  constructor(private http: HttpClient) {}
+
+  postPicture(picture: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('picture', picture);
+
+    return this.http.post<{url: string}>(`${environment.apiUrl}/picture`, formData)
+      .pipe(map(response => response.url));
+  }
+}
+
+import AWS from 'aws-sdk';
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+});
+
+app.post('/picture', (req, res) => {
+  const picture = req.files.picture;
+  const key = `pictures/${picture.name}`;
+  const params = { Bucket: process.env.AWS_BUCKET_NAME, Key: key, Body: picture.data };
+
+  s3.putObject(params, (err) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.json({ url: `https://s3.amazonaws.com/${process.env.AWS_BUCKET_NAME}/${key}` });
+    }
+  });
+});
