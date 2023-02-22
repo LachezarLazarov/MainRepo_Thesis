@@ -1,3 +1,5 @@
+require('dotenv').config(); 
+
 const express = require('express');
 
 const bodyParser = require('body-parser');
@@ -6,22 +8,26 @@ const authRoutes = require('./routes/auth');
 
 const errorController = require('./controllers/error');
 
-const session = require('express-session')
+const cookieSession = require('cookie-session')
 
+const db = require("./models");
+
+db.sequelize.sync({force: true}).then(() => {
+  console.log('Drop and Resync Db');
+});
 const app = express();
 
 const ports = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
-
+app.use(express.json());
 app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
-}))
-
+app.use(cookieSession({
+    name: "login-session",
+    secret: process.env.COOKIE_SECRET,
+    httpOnly: true
+  }))
+app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');

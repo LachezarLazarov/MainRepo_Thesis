@@ -1,77 +1,68 @@
-const { validationResult } = require('express-validator');
-
-const bcrypt = require('bcryptjs');
-
+const db = require("../models");
+const User = db.user;
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
-const User = require('../models/user');
-
-exports.signup = async(req, res, next) => {
-    const errors = validationResult(req);
-
-    if(!errors.isEmpty()) return
-
-    const name = req.body.name;
-    const email = req.body.email;
-    const password = req.body.password;
-
-    try{
-        const hashedPassword = await bcrypt.hash(password, 12)
-
-        const userDetails = {
-            name: name,
-            email: email,
-            password: hashedPassword,
-        };
-
-        const result = await User.save(userDetails);
-
-        res.status(201).json({ message: 'User is registered!'});
-    } catch (err) {
-        if(!err.statusCode){
-            err.statusCode = 500;
-        }
-        next(err);
-    }
+exports.signup = async (req, res) => {
+  try {
+    await User.create({
+      username: req.body.username,
+      email: req.body.email,
+      password: bcrypt.hashSync(req.body.password, 8),
+    });
+    res.send({ message: "User registered successfully!" });
+      
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 };
 
-exports.login = async(req, res, next) => {
-    const email = req.body.email;
-    const password = req.body.password;
+exports.signin = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        username: req.body.username,
+      },
+    });
 
-    try{
-        const user = await User.find(email)
-
-        if(user[0].length !== 1){
-            const error = new Error('A user with this email was not found.')
-            error.statusCode = 401;
-            throw error;
-        }
-
-        const storedUser = user[0][0];
-
-        const isEqual = await bcrypt.compare(password, storedUser.password);
-
-        if(!isEqual){
-            const error = new Error('Wrong password!')
-            error.statusCode = 401;
-            throw error;
-        }
-
-        const token = jwt.sign(
-            {
-              email: storedUser.email,
-              userId: storedUser.id  
-            },
-            'secretfortoken',
-            {expiresIn: '1h'}
-        );
-
-        res.status(200).json({token: token, userId: storedUser.id});
-    } catch (err) {
-        if(!err.statusCode){
-            err.statusCode = 500;
-        }
-        next(err);
+    if (!user) {
+      return res.status(404).send({ message: "User Not found." });
     }
-}
+
+    const passwordIsValid = bcrypt.compareSync(
+      req.body.password,
+      user.password
+    );
+
+    if (!passwordIsValid) {
+      return res.status(401).send({
+        message: "Invalid Password!",
+      });
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.COOKIE_SECRET, {
+      expiresIn: 86400, // 24 hours
+    });
+
+    req.session.token = token;
+
+    return res.status(200).send({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    });
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+exports.signout = async (req, res) => {
+  try {
+    req.session = null;
+    return res.status(200).send({
+      message: "You've been signed out!"
+    });
+  } catch (err) {
+    this.next(err);
+  }
+};
