@@ -11,7 +11,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING
     },
     location: {
-      type: Sequelize.STRING
+      type: Sequelize.GEOMETRY('POINT')
     },
     image: {
       type: Sequelize.STRING

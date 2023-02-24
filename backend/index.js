@@ -12,7 +12,7 @@ const cookieSession = require('cookie-session')
 
 const db = require("./models");
 
-db.sequelize.sync().then(() => {
+db.sequelize.sync({force: true}).then(() => {
   console.log('Drop and Resync Db');
 });
 const app = express();

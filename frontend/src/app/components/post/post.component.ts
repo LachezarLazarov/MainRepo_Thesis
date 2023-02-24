@@ -22,7 +22,7 @@ export class PostComponent {
     libraries: ["places"]
   });
 
-  private marker: Coordinates = {latitude: 0, longitude: 0};
+  private coortdinates: Coordinates = {latitude: 0, longitude: 0};
   @Output() imageClicked = new EventEmitter<FilePreviewModel>();  
   postForm: FormGroup = this.createFormGroup();
   postSuccess: boolean = false;
@@ -44,6 +44,16 @@ export class PostComponent {
         center: { lat: -28.024, lng: 140.887 },
     }
   );
+  function addMarker(position: google.maps.LatLng | google.maps.LatLngLiteral) {
+    marker?.setMap(null);
+    marker = new google.maps.Marker({
+      position,
+      map,
+    });
+    marker?.addListener("click", () => {
+      marker?.setMap(null);
+    });
+  }
 
   // Create the search box and link it to the UI element.
   const input = document.getElementById("pac-input") as HTMLInputElement;
@@ -55,8 +65,11 @@ export class PostComponent {
   map.addListener("bounds_changed", () => {
     searchBox.setBounds(map.getBounds() as google.maps.LatLngBounds);
   });
-
+  map.addListener("click", (event: google.maps.MapMouseEvent) => {
+    addMarker(event.latLng!);
+  });
   let markers: google.maps.Marker[] = [];
+  let marker: google.maps.Marker;
 
   // Listen for the event fired when the user selects a prediction and retrieve
   // more details for that place.
@@ -81,7 +94,6 @@ export class PostComponent {
         console.log("Returned place contains no geometry");
         return;
       }
-
       const icon = {
         url: place.icon as string,
         size: new google.maps.Size(71, 71),
@@ -89,17 +101,26 @@ export class PostComponent {
         anchor: new google.maps.Point(17, 34),
         scaledSize: new google.maps.Size(25, 25),
       };
-
       // Create a marker for each place.
-      markers.push(
-        new google.maps.Marker({
+      let tmp = new google.maps.Marker({
           map,
-          icon,
           title: place.name,
+          icon: icon,
           position: place.geometry.location,
         })
-      );
-      this.marker = {latitude: place.geometry.location.lat(), longitude: place.geometry.location.lng()};
+        tmp.addListener("click", () => {
+          marker?.setMap(null);
+          tmp.setMap(null);
+          marker = new google.maps.Marker({
+            map,
+            title: place.name,
+            position: place.geometry.location,
+          });
+          marker?.addListener("click", () => {
+            marker?.setMap(null);
+          });
+        });
+      markers.push(marker);
 
       if (place.geometry.viewport) {
         // Only geocodes have viewport.
@@ -130,7 +151,6 @@ export class PostComponent {
   }
 
   onSubmit(): void{
-    console.log(this.marker);
     this.postSuccess = true;
   }
   
