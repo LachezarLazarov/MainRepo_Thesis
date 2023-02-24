@@ -1,1 +1,38 @@
-<p>post works!</p>
+<form [formGroup]="postForm" *ngIf="!postSuccess" (ngSubmit)="onSubmit()" novalidate>
+    <div class="d-flex flex-column align-items-center justify-content-center">
+        <mat-form-field>
+            <mat-label>Title</mat-label>
+            <input matInput placeholder="Example: John " formControlName="title" />
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Content</mat-label>
+            <input matInput placeholder="Example: John " formControlName="content" />
+        </mat-form-field>
+        <ngx-awesome-uploader #uploader [fileExtensions]="['jpg', 'jpeg', 'png']" [adapter]="adapter"
+            [accept]="'.jpg, .png, .jpeg'" [itemTemplate]="myItemTemplate" style="overflow: hidden; overflow-y: auto;">
+        </ngx-awesome-uploader>
+        <ng-template #myItemTemplate let-fileItem="fileItem">
+            <div class="file-preview-wrapper">
+                <div class="file-preview-thumbnail">
+                    <div class="img-preview-thumbnail " *ngIf="fileItem?.file">
+                        <img [src]="getSafeUrl(fileItem.file)" (click)="imageClicked.next(fileItem)">
+                    </div>
+                    <div class="thumbnail-backdrop">
+
+                    </div>
+                    <p>File Size: {{ fileItem.file.size }}</p>
+                    <p>File Name: {{ fileItem.fileName }}</p>
+                </div>
+                <button mat-raised-button color="primary" (click)="uploader.removeFile(fileItem)" type="button">Remove</button>
+            </div>
+        </ng-template>
+        <input id="pac-input" class="controls" type="text" placeholder="Search Box" />
+        <div id="map"></div>
+    </div>
+    <button color="accent" [disabled]="!postForm.valid || !adapter.uploadAvailable()" mat-raised-button type="submit">
+        <span>Create post</span>
+    </button>
+</form>
+<div class="alert alert-success" *ngIf="postSuccess">
+    Posted successfully.
+</div>

@@ -1,7 +1,7 @@
-<form [formGroup]="signupForm" (ngSubmit)="signup()" novalidate>
+<form [formGroup]="signupForm" (ngSubmit)="onSubmit()" novalidate>
     <mat-form-field>
         <mat-label>First name</mat-label>
-        <input matInput placeholder="Example: John " formControlName="name" />
+        <input matInput placeholder="Example: John " formControlName="username" />
     </mat-form-field>
     <mat-form-field>
         <mat-label>Email</mat-label>

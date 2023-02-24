@@ -33,10 +33,10 @@ export class AuthService {
     );
   }
 
-  login(email: Pick<User, "email">, password: Pick<User, "password">): Observable<{
+  login(username: Pick<User, "username">, password: Pick<User, "password">): Observable<{
     token: string; userId: Pick<User, "id">
   }> {
-    return this.http.post<{token: string; userId: Pick<User, "id">}>(`${this.url}/login`, {email, password}, this.httpOptions).pipe(
+    return this.http.post<{token: string; userId: Pick<User, "id">}>(`${this.url}/login`, {username, password}, this.httpOptions).pipe(
       first(),
       tap((tokenObject: {token: string; userId: Pick<User, "id">}) => {
         this.userId = tokenObject.userId;
@@ -48,5 +48,8 @@ export class AuthService {
         token: string; userId: Pick<User, "id">;
       }>("login")) 
     )
+  }
+  logout(): Observable<any> {
+    return this.http.post(`${this.url}/logout`, { }, this.httpOptions);
   }
 }

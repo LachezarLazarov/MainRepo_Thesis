@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import { AuthService } from 'src/app/services/auth.service';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -10,25 +11,33 @@ import { AuthService } from 'src/app/services/auth.service';
 export class LoginComponent implements OnInit {
 
   loginForm: FormGroup = this.createFormGroup();
+  isLoggedIn = false;
 
-  constructor(private authService: AuthService){}
+  constructor(private authService: AuthService, private storageService: StorageService){}
 
   ngOnInit(): void {
     this.loginForm = this.createFormGroup();
+    if (this.storageService.isLoggedIn()) {
+      this.isLoggedIn = true;
+    }
   }
 
   createFormGroup(): FormGroup {
     return new FormGroup(
       {
-        email: new FormControl("", [Validators.required, Validators.email]),
+        username: new FormControl("", [Validators.required, Validators.minLength(2)]),
         password: new FormControl("", [Validators.required, Validators.minLength(7)]),
       }
     );
   }
 
   login(): void{
-    this.authService
-    .login(this.loginForm.value.email, this.loginForm.value.password)
-    .subscribe();
+    this.authService.login(this.loginForm.value.username, this.loginForm.value.password)
+    .subscribe({
+      next: data => {
+        this.storageService.saveUser(data);
+        this.isLoggedIn = true;
+      },
+    });
   }
 }

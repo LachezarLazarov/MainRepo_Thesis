@@ -13,6 +13,9 @@ module.exports = (sequelize, Sequelize) => {
     location: {
       type: Sequelize.STRING
     },
+    image: {
+      type: Sequelize.STRING
+    },
   });
 
   return Post;

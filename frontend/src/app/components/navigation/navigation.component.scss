@@ -1,14 +1,4 @@
-mat-toolbar{
-    display: flex;
-    justify-content: space-between;
-    padding: 0 64px;
-    a{
-        text-decoration: none;
-        &.active-link {
-            color: white
-        }
-        span {
-            margin-left: 24px;
-        }
-    }
+.nav-bar{
+    display: flex !important;
+    justify-content: space-between !important;
 }

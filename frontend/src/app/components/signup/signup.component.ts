@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import { AuthService } from 'src/app/services/auth.service';
-
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -20,13 +19,20 @@ export class SignupComponent implements OnInit {
   createFormGroup(): FormGroup {
     return new FormGroup(
       {
-        name: new FormControl("", [Validators.required, Validators.minLength(2)]),
+        username: new FormControl("", [Validators.required, Validators.minLength(2)]),
         email: new FormControl("", [Validators.required, Validators.email]),
         password: new FormControl("", [Validators.required, Validators.minLength(7)]),
       }
     )
   }
-  signup(): void{
-    this.authService.signup(this.signupForm.value).subscribe((msg) => console.log(msg))
+  onSubmit(): void{
+    console.log(this.signupForm.value)
+    this.authService.signup(this.signupForm.value).subscribe((msg) => {
+      console.log(msg);
+      this.authService.login(this.signupForm.value.username, this.signupForm.value.password).subscribe((msg) => {
+        console.log(msg);
+      });
+    });
+    
   }
 }

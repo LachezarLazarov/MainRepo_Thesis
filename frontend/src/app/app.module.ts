@@ -13,12 +13,16 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule} from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
 import { MatToolbarModule} from "@angular/material/toolbar";
+import { FilePickerModule } from 'ngx-awesome-uploader';
 
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { SignupComponent} from './components/signup/signup.component' ;
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { PostComponent } from './components/post/post.component';
+import { httpInterceptorProviders } from './helpers/http-interceptions';
+import { ProfileComponent } from './components/profile/profile.component';
+import { SafePipe } from './safe.pipe';
 
 @NgModule({
   declarations: [ 
@@ -27,7 +31,7 @@ import { PostComponent } from './components/post/post.component';
     SignupComponent, 
     LoginComponent, 
     HomeComponent, 
-    PostComponent,
+    PostComponent, ProfileComponent, SafePipe,
     
     
   ],
@@ -43,9 +47,10 @@ import { PostComponent } from './components/post/post.component';
     MatToolbarModule,
     ReactiveFormsModule,
     HttpClientModule,
+    FilePickerModule
 
   ],
-  providers: [],
+  providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

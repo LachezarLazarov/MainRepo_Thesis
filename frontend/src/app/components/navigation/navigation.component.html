@@ -1,18 +1,22 @@
-<mat-toolbar color = "accent">
-<span>
-    <a routerLink="/">
-        <span>Welcome!</span>
-    </a>
-</span>
-<span>
-    <a routerLinkActive ="active-link" routerLink = "/post"> 
-        <span>Posts</span>
-    </a>
-    <a routerLinkActive ="active-link" routerLink = "/login"> 
-        <span>Login</span>
-    </a>
-    <a routerLinkActive ="active-link" routerLink = "/signup"> 
-        <span>Signup</span>
-    </a>
-</span>
+<mat-toolbar color="primary">
+    <div class="d-flex justify-content-between flex-grow-1">
+    <div class="d-flex flex-row align-items-center">
+        <a route="/home" class="nav-link" routerLink="home" ngClass="me-4">Home</a>
+        <a href="/post" class="nav-link" routerLink="post">Post</a>
+    </div>
+    <div 
+        *ngIf="!this.storageService.isLoggedIn()"
+        class="d-flex flex-row align-items-center"
+    >
+        <a href="/signup" class="nav-link" routerLink="signup" ngClass="me-4">Sign up</a>
+        <a href="/login" class="nav-link" routerLink="login">Log in</a>    
+    </div>
+    <div 
+        *ngIf="this.storageService.isLoggedIn()"
+        class="d-flex flex-row align-items-center"
+    >
+        <a href="/profile" class="nav-link" routerLink="profile" ngClass="me-4">{{ this.storageService.getUser()?.username }}</a>
+        <a href class="nav-link" (click)="logout()">Log out</a>
+    </div>
+    </div>
 </mat-toolbar>
