@@ -2,6 +2,7 @@ module.exports = (sequelize, Sequelize) => {
   const Post = sequelize.define("posts", {
     id: {
       type: Sequelize.INTEGER,
+      autoIncrement: true,
       primaryKey: true
     },
     title: {
@@ -13,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
     location: {
       type: Sequelize.GEOMETRY('POINT')
     },
-    image: {
+    images: {
       type: Sequelize.STRING
     },
   });

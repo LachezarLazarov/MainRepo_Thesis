@@ -5,19 +5,21 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const authRoutes = require('./routes/auth');
-
+const postRoutes = require('./routes/post');
+const  cors = require('cors')
 const errorController = require('./controllers/error');
 
 const cookieSession = require('cookie-session')
 
 const db = require("./models");
 
-db.sequelize.sync({force: true}).then(() => {
+db.sequelize.sync({ force : true}).then(() => {
   console.log('Drop and Resync Db');
 });
 const app = express();
 
 const ports = process.env.PORT || 3000;
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(express.json());
@@ -36,6 +38,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/auth', authRoutes);
+app.use('/post', postRoutes);
 
 app.use(errorController.get404);
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import {User} from "../models/User";
+import { User } from "../models/User";
 import { BehaviorSubject, Observable } from 'rxjs';
 import { first, catchError, tap } from 'rxjs/operators';
 import { ErrorHandlerService } from './error-handler.service';
@@ -39,9 +39,6 @@ export class AuthService {
     return this.http.post<{token: string; userId: Pick<User, "id">}>(`${this.url}/login`, {username, password}, this.httpOptions).pipe(
       first(),
       tap((tokenObject: {token: string; userId: Pick<User, "id">}) => {
-        this.userId = tokenObject.userId;
-        localStorage.setItem("token", tokenObject.token);
-        this.isUserLoggedIn$.next(true);
         this.router.navigate(["post"]);
       }),
       catchError(this.errorHandlerService.handleError<{

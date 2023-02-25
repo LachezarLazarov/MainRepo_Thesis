@@ -6,8 +6,7 @@ import { SafeResourceUrl } from '@angular/platform-browser';
 import { Adapter } from './file.picker.adapter';
 import { environment } from 'src/environments/environment.development';
 import { Loader } from '@googlemaps/js-api-loader';
-
-type Coordinates = {latitude: number, longitude: number};
+import { PostService } from 'src/app/services/post.service';
 @Component({
   selector: 'app-post',
   templateUrl: './post.component.html',
@@ -22,7 +21,8 @@ export class PostComponent {
     libraries: ["places"]
   });
 
-  private coortdinates: Coordinates = {latitude: 0, longitude: 0};
+  private coordinates: any = {lat: 0, lng: 0};
+
   @Output() imageClicked = new EventEmitter<FilePreviewModel>();  
   postForm: FormGroup = this.createFormGroup();
   postSuccess: boolean = false;
@@ -31,119 +31,115 @@ export class PostComponent {
       {
         title: new FormControl("", [Validators.required, Validators.minLength(2)]),
         content: new FormControl("", [Validators.required, Validators.minLength(2)]),
-        // location: new FormControl("", [Validators.required, Validators.minLength(7)]),
       }
     );
   }
 
-  private initAutocomplete(google: any) {
-  const map = new google.maps.Map(
-    document.getElementById("map") as HTMLElement,
-    {
-        zoom: 3,
-        center: { lat: -28.024, lng: 140.887 },
-    }
-  );
-  function addMarker(position: google.maps.LatLng | google.maps.LatLngLiteral) {
-    marker?.setMap(null);
-    marker = new google.maps.Marker({
-      position,
-      map,
-    });
-    marker?.addListener("click", () => {
+  private initAutocomplete(google: any, coordinates: any) {
+    const map = new google.maps.Map(
+      document.getElementById("map") as HTMLElement,
+      {
+          zoom: 3,
+          center: { lat: -28.024, lng: 140.887 },
+      }
+    );
+    function addMarker(position: google.maps.LatLng | google.maps.LatLngLiteral) {
       marker?.setMap(null);
-    });
-  }
-
-  // Create the search box and link it to the UI element.
-  const input = document.getElementById("pac-input") as HTMLInputElement;
-  const searchBox = new google.maps.places.SearchBox(input);
-
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-  // Bias the SearchBox results towards current map's viewport.
-  map.addListener("bounds_changed", () => {
-    searchBox.setBounds(map.getBounds() as google.maps.LatLngBounds);
-  });
-  map.addListener("click", (event: google.maps.MapMouseEvent) => {
-    addMarker(event.latLng!);
-  });
-  let markers: google.maps.Marker[] = [];
-  let marker: google.maps.Marker;
-
-  // Listen for the event fired when the user selects a prediction and retrieve
-  // more details for that place.
-  searchBox.addListener("places_changed", () => {
-    const places = searchBox.getPlaces();
-
-    if (places?.length == 0) {
-      return;
+      marker = new google.maps.Marker({
+        position,
+        map,
+      });
+      const coords = marker.getPosition()?.toJSON();
+      coordinates.lat = coords?.lat;
+      coordinates.lng = coords?.lng;
+      marker?.addListener("click", () => {
+        marker?.setMap(null);
+      });
     }
 
-    // Clear out the old markers.
-    markers.forEach((marker) => {
-      marker.setMap(null);
+    // Create the search box and link it to the UI element.
+    const input = document.getElementById("pac-input") as HTMLInputElement;
+    const searchBox = new google.maps.places.SearchBox(input);
+
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+    // Bias the SearchBox results towards current map's viewport.
+    map.addListener("bounds_changed", () => {
+      searchBox.setBounds(map.getBounds() as google.maps.LatLngBounds);
     });
-    markers = [];
+    map.addListener("click", (event: google.maps.MapMouseEvent) => {
+      addMarker(event.latLng!);
+    });
+    let markers: google.maps.Marker[] = [];
+    let marker: google.maps.Marker;
 
-    // For each place, get the icon, name and location.
-    const bounds = new google.maps.LatLngBounds();
+    searchBox.addListener("places_changed", () => {
+      const places = searchBox.getPlaces();
 
-    places?.forEach((place : any) => {
-      if (!place.geometry || !place.geometry.location) {
-        console.log("Returned place contains no geometry");
+      if (places?.length == 0) {
         return;
       }
-      const icon = {
-        url: place.icon as string,
-        size: new google.maps.Size(71, 71),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(17, 34),
-        scaledSize: new google.maps.Size(25, 25),
-      };
-      // Create a marker for each place.
-      let tmp = new google.maps.Marker({
-          map,
-          title: place.name,
-          icon: icon,
-          position: place.geometry.location,
-        })
-        tmp.addListener("click", () => {
-          marker?.setMap(null);
-          tmp.setMap(null);
-          marker = new google.maps.Marker({
+
+      markers.forEach((marker) => {
+        marker.setMap(null);
+      });
+      markers = [];
+
+      const bounds = new google.maps.LatLngBounds();
+
+      places?.forEach((place : any) => {
+        if (!place.geometry || !place.geometry.location) {
+          console.log("Returned place contains no geometry");
+          return;
+        }
+        const icon = {
+          url: place.icon as string,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(17, 34),
+          scaledSize: new google.maps.Size(25, 25),
+        };
+        let tmp = new google.maps.Marker({
             map,
             title: place.name,
+            icon: icon,
             position: place.geometry.location,
-          });
-          marker?.addListener("click", () => {
+          })
+          tmp.addListener("click", () => {
             marker?.setMap(null);
+            tmp.setMap(null);
+            marker = new google.maps.Marker({
+              map,
+              title: place.name,
+              position: place.geometry.location,
+            });
+            marker?.addListener("click", () => {
+              marker?.setMap(null);
+            });
           });
-        });
-      markers.push(marker);
+        markers.push(marker);
 
-      if (place.geometry.viewport) {
-        // Only geocodes have viewport.
-        bounds.union(place.geometry.viewport);
-      } else {
-        bounds.extend(place.geometry.location);
-      }
+        if (place.geometry.viewport) {
+          bounds.union(place.geometry.viewport);
+        } else {
+          bounds.extend(place.geometry.location);
+        }
+      });
+      map.fitBounds(bounds);
     });
-    map.fitBounds(bounds);
-  });
-}
+  }
 
 
   public getSafeUrl(file: File | Blob): SafeResourceUrl {
     return this.fileService.createSafeUrl(file);
   }
-  constructor(private fileService: FilePickerService, private http: HttpClient) { }
+  constructor(private fileService: FilePickerService, private http: HttpClient, private postService : PostService) { }
   ngOnInit(): void {
     this.postForm = this.createFormGroup();
     this.loader
       .load()
       .then((google: any) => {
-        this.initAutocomplete(google);
+        this.initAutocomplete(google, this.coordinates);
       })
       .catch(e => {
         console.log(e);
@@ -152,6 +148,16 @@ export class PostComponent {
 
   onSubmit(): void{
     this.postSuccess = true;
+    const httpObj = {
+      title: this.postForm.value.title,
+      content: this.postForm.value.content,
+      location: this.coordinates,
+      images: this.adapter.getFiles()
+    }
+    console.log(httpObj);
+    this.postService.post(httpObj).subscribe((res : any) => {
+      console.log(res);
+    });
   }
   
 }

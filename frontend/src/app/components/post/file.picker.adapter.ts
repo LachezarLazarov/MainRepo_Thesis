@@ -1,15 +1,10 @@
 import {
-  HttpRequest,
   HttpClient,
-  HttpEvent,
-  HttpEventType
 } from '@angular/common/http';
-import { catchError, map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import {
   FilePickerAdapter,
   UploadResponse,
-  UploadStatus,
   FilePreviewModel
 } from 'ngx-awesome-uploader';
 

@@ -6,7 +6,7 @@
         </mat-form-field>
         <mat-form-field>
             <mat-label>Content</mat-label>
-            <input matInput placeholder="Example: John " formControlName="content" />
+            <textarea matInput  placeholder="Example: John " formControlName="content" ></textarea>
         </mat-form-field>
         <ngx-awesome-uploader #uploader [fileExtensions]="['jpg', 'jpeg', 'png']" [adapter]="adapter"
             [accept]="'.jpg, .png, .jpeg'" [itemTemplate]="myItemTemplate" style="overflow: hidden; overflow-y: auto;">
