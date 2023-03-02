@@ -5,12 +5,21 @@ const bcrypt = require("bcryptjs");
 
 exports.signup = async (req, res) => {
   try {
-    await User.create({
+    const user = await User.create({
       username: req.body.username,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 8),
     });
-    res.send({ message: "User registered successfully!" });
+    const token = jwt.sign({ id: user.id }, process.env.COOKIE_SECRET, {
+      expiresIn: 86400, // 24 hours
+    });
+
+    req.session.token = token;
+    return res.status(200).send({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    });
       
   } catch (error) {
       console.log(error.message);
@@ -46,7 +55,6 @@ exports.signin = async (req, res) => {
     });
 
     req.session.token = token;
-
     return res.status(200).send({
       id: user.id,
       username: user.username,

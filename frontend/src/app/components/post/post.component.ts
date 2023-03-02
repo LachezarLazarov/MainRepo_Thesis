@@ -7,6 +7,8 @@ import { Adapter } from './file.picker.adapter';
 import { environment } from 'src/environments/environment.development';
 import { Loader } from '@googlemaps/js-api-loader';
 import { PostService } from 'src/app/services/post.service';
+import { Router } from '@angular/router';
+import { StorageService } from 'src/app/services/storage.service';
 @Component({
   selector: 'app-post',
   templateUrl: './post.component.html',
@@ -20,6 +22,14 @@ export class PostComponent {
     version: "weekly",
     libraries: ["places"]
   });
+  markerPlaced: boolean = false;
+  placeMarker(): void {
+    console.log(this);
+    this.markerPlaced = true;
+  }
+  removeMarker(): void {
+    this.markerPlaced = false;
+  }
 
   private coordinates: any = {lat: 0, lng: 0};
 
@@ -35,12 +45,12 @@ export class PostComponent {
     );
   }
 
-  private initAutocomplete(google: any, coordinates: any) {
+  private initAutocomplete(google: any, coordinates: any, post: PostComponent): void {
     const map = new google.maps.Map(
       document.getElementById("map") as HTMLElement,
       {
           zoom: 3,
-          center: { lat: -28.024, lng: 140.887 },
+          center: { lat: 42.444567, lng: 24.7773029 },
       }
     );
     function addMarker(position: google.maps.LatLng | google.maps.LatLngLiteral) {
@@ -52,8 +62,11 @@ export class PostComponent {
       const coords = marker.getPosition()?.toJSON();
       coordinates.lat = coords?.lat;
       coordinates.lng = coords?.lng;
+      post.placeMarker();
+      ;
       marker?.addListener("click", () => {
         marker?.setMap(null);
+        post.removeMarker();
       });
     }
 
@@ -105,20 +118,10 @@ export class PostComponent {
             icon: icon,
             position: place.geometry.location,
           })
-          tmp.addListener("click", () => {
-            marker?.setMap(null);
-            tmp.setMap(null);
-            marker = new google.maps.Marker({
-              map,
-              title: place.name,
-              position: place.geometry.location,
-            });
-            marker?.addListener("click", () => {
-              marker?.setMap(null);
-            });
+          tmp.addListener("click", (event: google.maps.MapMouseEvent) => {
+            addMarker(event.latLng!);
           });
-        markers.push(marker);
-
+          markers.push(marker);
         if (place.geometry.viewport) {
           bounds.union(place.geometry.viewport);
         } else {
@@ -133,13 +136,14 @@ export class PostComponent {
   public getSafeUrl(file: File | Blob): SafeResourceUrl {
     return this.fileService.createSafeUrl(file);
   }
-  constructor(private fileService: FilePickerService, private http: HttpClient, private postService : PostService) { }
+  constructor(private fileService: FilePickerService, private http: HttpClient, private postService : PostService, private router: Router, private storageService: StorageService) { }
   ngOnInit(): void {
+    if(!this.storageService.isLoggedIn()) this.router.navigate(['/login']);
     this.postForm = this.createFormGroup();
     this.loader
       .load()
       .then((google: any) => {
-        this.initAutocomplete(google, this.coordinates);
+        this.initAutocomplete(google, this.coordinates, this);
       })
       .catch(e => {
         console.log(e);
@@ -148,15 +152,15 @@ export class PostComponent {
 
   onSubmit(): void{
     this.postSuccess = true;
-    const httpObj = {
-      title: this.postForm.value.title,
-      content: this.postForm.value.content,
-      location: this.coordinates,
-      images: this.adapter.getFiles()
-    }
-    console.log(httpObj);
-    this.postService.post(httpObj).subscribe((res : any) => {
+    const  formData = new FormData();
+    this.adapter.getFiles().forEach((file: FilePreviewModel) => formData.append('images', file.file));
+    formData.append('title', this.postForm.value.title);
+    formData.append('content', this.postForm.value.content);
+    formData.append('location', JSON.stringify(this.coordinates));
+    console.log(formData.getAll('images'));
+    this.postService.post(formData).subscribe((res : any) => {
       console.log(res);
+      this.router.navigate(['/post', res.post.id]);
     });
   }
   

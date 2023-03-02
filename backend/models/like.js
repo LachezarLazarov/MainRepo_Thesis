@@ -4,11 +4,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       autoIncrement: true,
       primaryKey: true
-    },
-    liked: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false
-    },
+    }
   });
 
   return Like;

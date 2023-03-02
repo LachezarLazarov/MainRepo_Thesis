@@ -16,8 +16,9 @@ export class AuthService {
   isUserLoggedIn$ = new BehaviorSubject<boolean>(false);
   userId: Pick<User, "id"> | undefined;
 
-  httpOptions: {headers: HttpHeaders} = {
+  httpOptions = {
     headers: new HttpHeaders({"Content-Type": "application/json"}),
+    withCredentials: true 
   };
 
   constructor(
@@ -39,7 +40,7 @@ export class AuthService {
     return this.http.post<{token: string; userId: Pick<User, "id">}>(`${this.url}/login`, {username, password}, this.httpOptions).pipe(
       first(),
       tap((tokenObject: {token: string; userId: Pick<User, "id">}) => {
-        this.router.navigate(["post"]);
+        this.router.navigate([""]);
       }),
       catchError(this.errorHandlerService.handleError<{
         token: string; userId: Pick<User, "id">;

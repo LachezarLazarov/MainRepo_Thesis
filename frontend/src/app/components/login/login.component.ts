@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import { AuthService } from 'src/app/services/auth.service';
 import { StorageService } from 'src/app/services/storage.service';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -13,7 +13,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup = this.createFormGroup();
   isLoggedIn = false;
 
-  constructor(private authService: AuthService, private storageService: StorageService){}
+  constructor(private authService: AuthService, private storageService: StorageService, private router: Router){}
 
   ngOnInit(): void {
     this.loginForm = this.createFormGroup();
@@ -37,6 +37,7 @@ export class LoginComponent implements OnInit {
       next: data => {
         this.storageService.saveUser(data);
         this.isLoggedIn = true;
+        this.router.navigate([""])
       },
     });
   }

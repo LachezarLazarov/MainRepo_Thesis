@@ -1,4 +1,4 @@
-<form [formGroup]="loginForm"*ngIf="!isLoggedIn" (ngSubmit)="login()" novalidate >
+<form [formGroup]="loginForm" *ngIf="!isLoggedIn" (ngSubmit)="login()" novalidate >
     <mat-form-field>
         <mat-label>Email</mat-label>
         <input matInput placeholder="Example: John " formControlName="username" />

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import { AuthService } from 'src/app/services/auth.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -9,11 +11,14 @@ import { AuthService } from 'src/app/services/auth.service';
 export class SignupComponent implements OnInit {
   signupForm: FormGroup = this.createFormGroup();
 
-
-  constructor(private authService: AuthService) {}
+  isLoggedIn = false;
+  constructor(private authService: AuthService, private storageService: StorageService, private router: Router) {}
 
   ngOnInit(): void {
     this.signupForm = this.createFormGroup();
+    if (this.storageService.isLoggedIn()) {
+      this.isLoggedIn = true;
+    }
   }
 
   createFormGroup(): FormGroup {
@@ -27,11 +32,12 @@ export class SignupComponent implements OnInit {
   }
   onSubmit(): void{
     console.log(this.signupForm.value)
-    this.authService.signup(this.signupForm.value).subscribe((msg) => {
-      console.log(msg);
-      this.authService.login(this.signupForm.value.username, this.signupForm.value.password).subscribe((msg) => {
-        console.log(msg);
-      });
+    this.authService.signup(this.signupForm.value).subscribe({
+      next: data => {
+        this.storageService.saveUser(data);
+        this.isLoggedIn = true;
+        this.router.navigate([""]);
+      }
     });
     
   }

@@ -11,7 +11,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^15.1.0",
-    "@angular/cdk": "^15.1.1",
+    "@angular/cdk": "^15.2.0",
     "@angular/common": "^15.1.0",
     "@angular/compiler": "^15.1.0",
     "@angular/core": "^15.1.0",
@@ -23,6 +23,7 @@
     "@googlemaps/js-api-loader": "^1.15.1",
     "@googlemaps/markerclusterer": "^2.0.15",
     "bootstrap": "^5.2.3",
+    "ng-gallery": "^8.0.2",
     "ngx-awesome-uploader": "^15.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

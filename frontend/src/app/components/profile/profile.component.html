@@ -1,21 +1,16 @@
-<div class="container" *ngIf="currentUser; else loggedOut">
+<div class="container-gallery">
     <header class="jumbotron">
         <h3>
-            <strong>{{ currentUser.username }}</strong> Profile
+            <strong>{{ currentUser?.username }}</strong> Profile
         </h3>
     </header>
     <p>
         <strong>Email:</strong>
-        {{ currentUser.email }}
+        {{ currentUser?.email }}
     </p>
-    <strong>Roles:</strong>
-    <ul>
-        <li *ngFor="let role of currentUser.roles">
-            {{ role }}
-        </li>
-    </ul>
+    <div class="grid">
+        <div class="grid-item" *ngFor="let item of items; let i = index" gallerize>
+            <img [src]="item.data?.src">
+        </div>
+    </div>
 </div>
-
-<ng-template #loggedOut>
-    Please login.
-</ng-template>

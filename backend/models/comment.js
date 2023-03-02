@@ -5,8 +5,9 @@ module.exports = (sequelize, Sequelize) => {
       autoIncrement: true,
       primaryKey: true
     },
-    commnent: {
-      type: Sequelize.STRING
+    comment: {
+      type: Sequelize.STRING,
+      notEmpty: true
     },
   });
 

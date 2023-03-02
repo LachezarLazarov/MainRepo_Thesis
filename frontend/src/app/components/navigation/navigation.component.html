@@ -2,7 +2,7 @@
     <div class="d-flex justify-content-between flex-grow-1">
     <div class="d-flex flex-row align-items-center">
         <a route="/home" class="nav-link" routerLink="home" ngClass="me-4">Home</a>
-        <a href="/post" class="nav-link" routerLink="post">Post</a>
+        <a href="/post" class="nav-link" routerLink="post" *ngIf="this.storageService.isLoggedIn()">Post</a>
     </div>
     <div 
         *ngIf="!this.storageService.isLoggedIn()"
@@ -15,7 +15,7 @@
         *ngIf="this.storageService.isLoggedIn()"
         class="d-flex flex-row align-items-center"
     >
-        <a href="/profile" class="nav-link" routerLink="profile" ngClass="me-4">{{ this.storageService.getUser()?.username }}</a>
+        <a [routerLink]="['/profile', this.storageService.getUser()?.id]" class="nav-link" routerLink="profile" ngClass="me-4">{{ this.storageService.getUser()?.username }}</a>
         <a href class="nav-link" (click)="logout()">Log out</a>
     </div>
     </div>

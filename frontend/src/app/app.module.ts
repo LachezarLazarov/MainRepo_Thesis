@@ -12,8 +12,11 @@ import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule} from "@angular/material/input";
 import { MatListModule } from "@angular/material/list";
-import { MatToolbarModule} from "@angular/material/toolbar";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatTabsModule } from '@angular/material/tabs';
 import { FilePickerModule } from 'ngx-awesome-uploader';
+import { GalleryModule } from  'ng-gallery';
+import { LightboxModule, LIGHTBOX_CONFIG   } from  'ng-gallery/lightbox';
 
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { SignupComponent} from './components/signup/signup.component' ;
@@ -23,6 +26,7 @@ import { PostComponent } from './components/post/post.component';
 import { httpInterceptorProviders } from './helpers/http-interceptions';
 import { ProfileComponent } from './components/profile/profile.component';
 import { SafePipe } from './safe.pipe';
+import { PostPageComponent } from './components/post-page/post-page.component';
 
 @NgModule({
   declarations: [ 
@@ -31,7 +35,7 @@ import { SafePipe } from './safe.pipe';
     SignupComponent, 
     LoginComponent, 
     HomeComponent, 
-    PostComponent, ProfileComponent, SafePipe,
+    PostComponent, ProfileComponent, SafePipe, PostPageComponent,
     
     
   ],
@@ -47,10 +51,21 @@ import { SafePipe } from './safe.pipe';
     MatToolbarModule,
     ReactiveFormsModule,
     HttpClientModule,
-    FilePickerModule
+    FilePickerModule,
+    GalleryModule,
+    LightboxModule,
+    MatTabsModule
 
   ],
-  providers: [httpInterceptorProviders],
+  providers: [
+    httpInterceptorProviders,
+    {
+      provide: LIGHTBOX_CONFIG,
+      useValue: {
+        keyboardShortcuts: false
+      }
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
