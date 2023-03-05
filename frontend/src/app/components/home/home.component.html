@@ -14,7 +14,7 @@
                                 post.user?.username }}</strong></a>
                     </h3>
                     <p class="me-2">{{post?.updatedAt | date:'medium'}}</p>
-                    <p class="me-4">{{post?.location?.name }}</p>
+                    <p class="me-3">{{post?.location?.name }}</p>
                     <a *ngIf="this.currentUser?.id === post.userId" [routerLink]="['/post', post.id, 'edit']" class="nav-link" routerLink="post"><strong>Edit</strong></a>
                 </div>
                 <div gallerize class="container-gallery">

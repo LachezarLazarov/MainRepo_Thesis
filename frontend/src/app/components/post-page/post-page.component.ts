@@ -56,9 +56,12 @@ export class PostPageComponent {
         console.log(res);
         if (res.results?.length > 0) {
           this.post.location.name = '';
-          res.results[0].address_components.forEach((component: any) => {
+          res.results[0].address_components.forEach((component: any, i: number) => {
             if (!component.types.includes('plus_code')) {
-              this.post.location.name += component.short_name + ', ';
+              this.post.location.name += component.short_name;
+              if(res.results[0].address_components.length - 1 != i) {
+                this.post.location.name += ', ';
+              }
             }
           });
         }
