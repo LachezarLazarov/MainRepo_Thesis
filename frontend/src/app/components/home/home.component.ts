@@ -4,6 +4,9 @@ import { environment } from 'src/environments/environment.development';
 import { Loader } from '@googlemaps/js-api-loader';
 import { HomeService } from 'src/app/services/home.service';
 import { Router } from '@angular/router';
+import { PostPageService } from 'src/app/services/post-page.service';
+import { StorageService } from 'src/app/services/storage.service';
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -15,17 +18,22 @@ export class HomeComponent {
     version: "weekly",
     libraries: ["places"]
   });
-
+  posts: any = [];
+  commentForm: FormGroup = this.createFormGroup();
+  createFormGroup(): FormGroup {
+    return new FormGroup(
+      {
+        comment: new FormControl("", [Validators.required, Validators.minLength(2)]),
+      }
+    );
+  }
   private initMap(google: any): void {
-    this.homeService.getPosts().subscribe((res: any) => {
-      console.log(res.posts);
-      const locations = res.posts.map((item: any) => {
+      const locations = this.posts.map((item: any) => {
         const lat = item.location.coordinates[0];
         const lng = item.location.coordinates[1];
         console.log(lat, lng);
         return {  lat: lat, lng: lng, title: item.title, id : item.id, images: item.images };
       });
-      console.log(locations);
     const map = new google.maps.Map(
       document.getElementById("map") as HTMLElement,
       {
@@ -75,21 +83,53 @@ export class HomeComponent {
     // Add a marker clusterer to manage the markers.
     var markerCluster =  new MarkerClusterer({ markers, map,  });
     console.log(markerCluster)
-    });
   }
 
-  constructor(private homeService: HomeService, private router: Router) {
+  constructor(private homeService: HomeService, private router: Router, private postPageService: PostPageService, public storageService: StorageService) {
    }
 
 
   ngOnInit(): void {
-  this.loader
-    .load()
-    .then((google: any) => {
-      this.initMap(google);
-    })
-    .catch(e => {
-      console.log(e);
+    this.homeService.getPosts().subscribe((res: any) => {
+      this.posts = res;
+      this.loader
+        .load()
+        .then((google: any) => {
+          this.initMap(google);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    });
+  }
+
+  like(post : any): void {
+    this.postPageService.like(post.id).subscribe((res: any) => {
+      console.log(res);
+      post.liked = true;
+      this.postPageService.getLikes(post.id).subscribe((res: any) => {
+        post.likes = res.likes;
+      });
+    });
+  }
+
+  unlike(post: any): void {
+    this.postPageService.unlike(post.id).subscribe((res: any) => {
+      console.log(res);
+      post.liked = false;
+      this.postPageService.getLikes(post.id).subscribe((res: any) => {
+        post.likes = res.likes;
+      });
+    });
+  }
+
+  onComment(post: any): void {
+    this.postPageService.createComment(post.id, this.commentForm.value).subscribe((res: any) => {
+      console.log(res);
+      this.postPageService.getComments(post.id).subscribe((res: any) => {
+        console.log(res);
+        post.comments = res.comments;
+      });
     });
   }
 }

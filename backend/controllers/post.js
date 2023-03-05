@@ -45,7 +45,7 @@ exports.post = async(req, res, next) => {
             images: url,
             userId: userId.id
         });
-        res.status(2000).json({message: 'Post created', post: post});
+        res.status(200).json({message: 'Post created', post: post});
     } catch (err) {
         if(!err.statusCode){
             err.statusCode = 500;
@@ -269,7 +269,7 @@ exports.getLikes = async (req, res, next) => {
         }
         next(err);
     }
-}   
+}       
 
 exports.getLiked = async (req, res, next) => {
     try {

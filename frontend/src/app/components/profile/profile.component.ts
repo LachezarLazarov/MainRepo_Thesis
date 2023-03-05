@@ -15,7 +15,7 @@ export class ProfileComponent implements OnInit {
   constructor(private storageService: StorageService, private profileService: ProfileService, public gallery: Gallery, private activeRoute: ActivatedRoute) { }
   galleryId = 'myLightbox';
   items: GalleryItem[] = [];
-
+  posts: any = [];
   ngOnInit(): void {
     this.profileService.getUser(this.activeRoute.snapshot.params['id']).subscribe((res: any) => {
       console.log(res);
@@ -23,6 +23,7 @@ export class ProfileComponent implements OnInit {
     });
     this.profileService.getPostsByUserId(this.activeRoute.snapshot.params['id']).subscribe((res: any) => {
       console.log(this.activeRoute.snapshot.params['id']);
+      this.posts = res.posts;
       res.posts.forEach((post: any) => {
         console.log(post);
         this.items.push(new ImageItem({ src: post.images[0], thumb: post.images[0] }));

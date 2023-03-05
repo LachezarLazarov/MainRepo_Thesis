@@ -1,4 +1,4 @@
-<div class="container-gallery">
+<div>
     <div class="d-flex justfiy-content-center align-items-center flex-column m-auto">
         <div class="d-flex align-items-baseline">
             <h3 class="me-2">
@@ -7,10 +7,10 @@
             <p class="me-2">{{post?.updatedAt | date:'medium'}}</p>
             <p>{{post?.location?.name}}</p>
         </div>
-    <div gallerize>
+    <div gallerize class="container-gallery">
         <img  *ngFor="let image of post?.images" [src]="image" [attr.imageSrc]="image" [attr.thumbSrc]="image.thumb"/>
         </div>
-        <div class="w-100">
+        <div class="w-50">
             <div class="d-flex justify-content-between fluid">
                 <p >
                     <strong>{{ post?.title }}</strong>
@@ -34,10 +34,10 @@
         <div *ngFor="let comment of this.comments">
             <div class="d-flex">
                 <div class="d-flex flex-column justify-content-between fluid">
-                    <p>
-                        <a [routerLink]="['/profile', this.user?.id]" class="nav-link" routerLink="profile"><strong>{{ comment?.user?.username }}</strong></a>
+                    <div class="d-flex">
+                        <a [routerLink]="['/profile', this.user?.id]" class="nav-link me-2" routerLink="profile"><strong>{{ comment?.user?.username }}</strong></a>
                         {{comment?.updatedAt | date:'medium'}}
-                    </p>
+                    </div>
                     <p>
                         {{ comment?.comment }}
                     </p>

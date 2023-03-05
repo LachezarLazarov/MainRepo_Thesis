@@ -17,8 +17,8 @@ export class NavigationComponent {
       next: res => {
         console.log(res);
         this.storageService.clean();
+
         console.log(this.storageService.isLoggedIn());
-        window.location.reload();
       },
       error: err => {
         console.log(err);

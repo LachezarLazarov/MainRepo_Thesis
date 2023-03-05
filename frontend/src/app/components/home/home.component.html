@@ -6,6 +6,69 @@
         </div>
     </mat-tab>
     <mat-tab label="Posts">
+        <div *ngFor="let post of this.posts">
+            <div class="d-flex justfiy-content-center align-items-center flex-column m-auto">
+                <div class="d-flex align-items-baseline">
+                    <h3 class="me-2">
+                        <a [routerLink]="['/profile', post.user?.id]" class="nav-link" routerLink="profile"><strong>{{
+                                post.user?.username }}</strong></a>
+                    </h3>
+                    <p class="me-2">{{post?.updatedAt | date:'medium'}}</p>
+                    <p>{{post?.location?.name }}</p>
 
+                </div>
+                <div gallerize class="container-gallery">
+                    <img *ngFor="let image of post?.images" [src]="image" [attr.imageSrc]="image"
+                        [attr.thumbSrc]="image.thumb" />
+                </div>
+                <div class="w-50">
+                    <div class="d-flex justify-content-between fluid">
+                        <p>
+                            <strong>{{ post?.title }}</strong>
+                        </p>
+                        <div class="d-flex align-items-baseline">
+                            <p class="me-2 d-flex">
+                                {{ post.likes?.length }} likes
+                            </p>
+                            <button *ngIf="!post.liked && this.storageService.isLoggedIn()" mat-raised-button color="primary"
+                                (click)="this.like(post)">
+                                Like
+                            </button>
+                            <button *ngIf="post.liked && this.storageService.isLoggedIn()" mat-raised-button color="warn"
+                                (click)="this.unlike(post)">
+                                Unlike
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <p>
+                    {{ post?.content }}
+                </p>
+        <div *ngFor="let comment of post.comments">
+            <div class="d-flex">
+                <div class="d-flex flex-column justify-content-between fluid">
+                    <div class="d-flex">
+                        <a [routerLink]="['/profile', post.user?.id]" class="nav-link me-2" routerLink="profile"><strong>{{
+                                comment?.user?.username }}</strong></a>
+                        {{comment?.updatedAt | date:'medium'}}
+                    </div>
+                    <p>
+                        {{ comment?.comment }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <form *ngIf="this.storageService.isLoggedIn()" [formGroup]="commentForm" (ngSubmit)="onComment(post)" novalidate
+            class="d-flex flex-column align-items-center justify-content-center">
+            <mat-form-field>
+                <mat-label>Comment</mat-label>
+                <input matInput placeholder="Example: John " formControlName="comment" />
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit">
+                Comment
+            </button>
+        </form>
+            </div>
+        </div>
     </mat-tab>
 </mat-tab-group>

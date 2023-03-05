@@ -1,16 +1,12 @@
-<div class="container-gallery">
-    <header class="jumbotron">
+<div>
+    <header>
         <h3>
-            <strong>{{ currentUser?.username }}</strong> Profile
+            <strong>{{ currentUser?.username }}</strong>
         </h3>
     </header>
-    <p>
-        <strong>Email:</strong>
-        {{ currentUser?.email }}
-    </p>
-    <div class="grid">
+    <div class="grid container-gallery">
         <div class="grid-item" *ngFor="let item of items; let i = index" gallerize>
-            <img [src]="item.data?.src">
+            <a [routerLink]="['/post', this.posts[i]?.id]" class="nav-link me-2" routerLink="profile"><img [src]="item.data?.src"></a>
         </div>
     </div>
 </div>
