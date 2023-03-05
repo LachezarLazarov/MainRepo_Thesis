@@ -27,6 +27,7 @@ import { httpInterceptorProviders } from './helpers/http-interceptions';
 import { ProfileComponent } from './components/profile/profile.component';
 import { SafePipe } from './safe.pipe';
 import { PostPageComponent } from './components/post-page/post-page.component';
+import { EditPostComponent } from './components/edit-post/edit-post.component';
 
 @NgModule({
   declarations: [ 
@@ -35,7 +36,7 @@ import { PostPageComponent } from './components/post-page/post-page.component';
     SignupComponent, 
     LoginComponent, 
     HomeComponent, 
-    PostComponent, ProfileComponent, SafePipe, PostPageComponent,
+    PostComponent, ProfileComponent, SafePipe, PostPageComponent, EditPostComponent,
     
     
   ],

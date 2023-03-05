@@ -20,6 +20,7 @@ export class HomeComponent {
   });
   posts: any = [];
   commentForm: FormGroup = this.createFormGroup();
+  currentUser: any = {};
   createFormGroup(): FormGroup {
     return new FormGroup(
       {
@@ -90,6 +91,7 @@ export class HomeComponent {
 
 
   ngOnInit(): void {
+    this.currentUser = this.storageService.getUser();
     this.homeService.getPosts().subscribe((res: any) => {
       this.posts = res;
       this.loader

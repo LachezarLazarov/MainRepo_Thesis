@@ -72,4 +72,11 @@ export class PostPageService {
       catchError(this.errorHandlerService.handleError<Post>("post")) 
     );
   }
+
+  deletePost(postId: any): Observable<Post>{
+    return this.http.delete<Post>(`${this.url}/${postId}`, this.httpOptions).pipe(
+      first(),
+      catchError(this.errorHandlerService.handleError<Post>("post")) 
+    );
+  }
 }

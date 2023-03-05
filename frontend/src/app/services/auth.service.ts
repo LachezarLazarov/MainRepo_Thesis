@@ -34,17 +34,13 @@ export class AuthService {
     );
   }
 
-  login(username: Pick<User, "username">, password: Pick<User, "password">): Observable<{
-    token: string; userId: Pick<User, "id">
-  }> {
-    return this.http.post<{token: string; userId: Pick<User, "id">}>(`${this.url}/login`, {username, password}, this.httpOptions).pipe(
+  login(username: Pick<User, "username">, password: Pick<User, "password">): Observable<any> {
+    return this.http.post<any>(`${this.url}/login`, {username, password}, this.httpOptions).pipe(
       first(),
-      tap((tokenObject: {token: string; userId: Pick<User, "id">}) => {
+      tap((tokenObject: any) => {
         this.router.navigate([""]);
       }),
-      catchError(this.errorHandlerService.handleError<{
-        token: string; userId: Pick<User, "id">;
-      }>("login")) 
+      catchError(this.errorHandlerService.handleError<any>("login"))
     )
   }
   logout(): Observable<any> {

@@ -33,11 +33,13 @@ export class LoginComponent implements OnInit {
 
   login(): void{
     this.authService.login(this.loginForm.value.username, this.loginForm.value.password)
-    .subscribe({
-      next: data => {
-        this.storageService.saveUser(data);
-        this.isLoggedIn = true;
-        this.router.navigate([""])
+      .subscribe({
+        next: data => {
+          if (data) {
+            this.storageService.saveUser(data);
+            this.isLoggedIn = true;
+            this.router.navigate([""])
+          }
       },
     });
   }

@@ -6,11 +6,13 @@ import { PostComponent } from './components/post/post.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { PostPageComponent } from './components/post-page/post-page.component';
+import { EditPostComponent } from './components/edit-post/edit-post.component';
 
 const routes: Routes = [
   { path: "", component: HomeComponent },
   { path: "post", component: PostComponent },
   { path: "post/:id", component: PostPageComponent },
+  { path: "post/:id/edit", component: EditPostComponent},
   { path: "login", component: LoginComponent },
   { path: "signup", component: SignupComponent },
   { path: "profile/:id", component: ProfileComponent },

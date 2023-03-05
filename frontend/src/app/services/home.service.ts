@@ -38,9 +38,12 @@ export class HomeService {
           this.postPageService.getLocation(item.location.coordinates).subscribe((res: any) => {
             if (res.results?.length > 0) {
               post.location.name = '';
-              res.results[0].address_components.forEach((component: any) => {
+              res.results[0].address_components.forEach((component: any, i: number) => {
                 if (!component.types.includes('plus_code')) {
-                  post.location.name += component.short_name + ', ';
+                  post.location.name += component.short_name;
+                  if(res.results[0].address_components.length - 1 !== i) {
+                    post.location.name += ', ';
+                  }
                 }
               });
             }
